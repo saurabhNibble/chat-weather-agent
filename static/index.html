@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheris | Autonomous Weather & Web Intelligence Agent</title>
+  <meta name="description" content="State-of-the-art AI Agent combining ReAct reasoning with real-time WeatherStack meteorological telemetry and Tavily web intelligence.">
+  <meta name="theme-color" content="#060913">
+
+  <!-- Modern Typography (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons & Marked for Markdown -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Ambient Background Lighting Glows -->
+  <div class="ambient-glow glow-cyan" aria-hidden="true"></div>
+  <div class="ambient-glow glow-indigo" aria-hidden="true"></div>
+  <div class="ambient-glow glow-violet" aria-hidden="true"></div>
+
+  <div class="app-layout">
+    <!-- Top Header Navigation -->
+    <header class="app-header" id="app-header">
+      <div class="header-brand">
+        <div class="brand-avatar-wrapper">
+          <img src="/static/assets/logo.jpg" alt="Aetheris Agent Logo" class="brand-avatar" id="brand-avatar-img">
+          <span class="status-pulse" id="agent-status-pulse" title="Agent Online"></span>
+        </div>
+        <div class="brand-info">
+          <div class="brand-title-row">
+            <h1 class="brand-name">Aetheris</h1>
+            <span class="badge badge-accent">AGENT v1.0</span>
+          </div>
+          <p class="brand-sub">Autonomous Weather & Web Intelligence</p>
+        </div>
+      </div>
+
+      <!-- Center System Engine Telemetry -->
+      <div class="telemetry-pill-group">
+        <div class="telemetry-pill" title="Inference Engine">
+          <i class="fa-solid fa-bolt text-cyan"></i>
+          <span>Groq LPU (Qwen 27B)</span>
+        </div>
+        <div class="telemetry-pill" title="Real-time Web Search">
+          <i class="fa-solid fa-globe text-indigo"></i>
+          <span>Tavily AI</span>
+        </div>
+        <div class="telemetry-pill" title="Live Meteorological Telemetry">
+          <i class="fa-solid fa-cloud-sun text-emerald"></i>
+          <span>WeatherStack API</span>
+        </div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <button id="clear-chat-btn" class="btn btn-ghost" title="Clear conversation history">
+          <i class="fa-solid fa-trash-can"></i>
+          <span class="hide-mobile">Clear Chat</span>
+        </button>
+        <button id="sidebar-toggle-btn" class="btn btn-icon" aria-label="Toggle Sidebar" title="Toggle Sidebar">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Container Layout: Sidebar + Chat Hub -->
+    <main class="main-content">
+      <!-- Left Sidebar: Live Weather Widget & Quick Prompts -->
+      <aside class="sidebar" id="sidebar">
+        <!-- Live Quick Weather Widget -->
+        <section class="sidebar-section" aria-labelledby="live-weather-heading">
+          <div class="section-header">
+            <h2 id="live-weather-heading" class="section-title">
+              <i class="fa-solid fa-cloud-bolt text-cyan"></i> Live Telemetry
+            </h2>
+            <span class="live-dot" title="Live Sensor"></span>
+          </div>
+
+          <div class="weather-widget-card" id="weather-widget-card">
+            <!-- City Search Box -->
+            <form id="weather-lookup-form" class="weather-search-bar" onsubmit="event.preventDefault();">
+              <input 
+                type="text" 
+                id="weather-city-input" 
+                placeholder="Search city (e.g. New Delhi, London)..." 
+                aria-label="City for weather lookup"
+                autocomplete="off"
+              >
+              <button type="submit" id="weather-search-submit" class="btn-search" title="Lookup Weather">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </form>
+
+            <!-- Weather Details Output -->
+            <div class="weather-display" id="weather-display">
+              <div class="weather-display-header">
+                <div class="weather-location-group">
+                  <h3 class="weather-city-name" id="widget-city-name">New Delhi</h3>
+                  <p class="weather-country" id="widget-country">India</p>
+                </div>
+                <div class="weather-icon-badge" id="widget-icon-wrapper">
+                  <i class="fa-solid fa-sun weather-icon-sun" id="widget-weather-icon"></i>
+                </div>
+              </div>
+
+              <div class="weather-temp-row">
+                <span class="weather-temp-value" id="widget-temp">30</span>
+                <span class="weather-temp-unit">°C</span>
+                <div class="weather-condition-pill" id="widget-desc">Clear Sky</div>
+              </div>
+
+              <div class="weather-metrics-grid">
+                <div class="metric-cell">
+                  <span class="metric-label"><i class="fa-solid fa-temperature-half"></i> Feels Like</span>
+                  <span class="metric-val" id="widget-feels">32°C</span>
+                </div>
+                <div class="metric-cell">
+                  <span class="metric-label"><i class="fa-solid fa-droplet"></i> Humidity</span>
+                  <span class="metric-val" id="widget-humidity">47%</span>
+                </div>
+                <div class="metric-cell">
+                  <span class="metric-label"><i class="fa-solid fa-wind"></i> Wind</span>
+                  <span class="metric-val" id="widget-wind">12 km/h</span>
+                </div>
+                <div class="metric-cell">
+                  <span class="metric-label"><i class="fa-solid fa-eye"></i> Visibility</span>
+                  <span class="metric-val" id="widget-visibility">10 km</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Prompt Suggestions Section -->
+        <section class="sidebar-section" aria-labelledby="prompts-heading">
+          <div class="section-header">
+            <h2 id="prompts-heading" class="section-title">
+              <i class="fa-solid fa-wand-magic-sparkles text-indigo"></i> Quick Prompts
+            </h2>
+          </div>
+          <div class="quick-prompts-list" id="quick-prompts-list">
+            <button class="prompt-chip" data-query="Tell me about Iran and America latest war and today's temperature of New Delhi">
+              <i class="fa-solid fa-crosshairs text-cyan"></i>
+              <span>Iran-US latest conflict & New Delhi temperature</span>
+            </button>
+            <button class="prompt-chip" data-query="What is the current weather in Tokyo and Paris? Compare both cities.">
+              <i class="fa-solid fa-scale-balanced text-indigo"></i>
+              <span>Compare live weather in Tokyo vs Paris</span>
+            </button>
+            <button class="prompt-chip" data-query="What are the top breaking global news events right now?">
+              <i class="fa-solid fa-newspaper text-emerald"></i>
+              <span>Breaking world news & geopolitical updates</span>
+            </button>
+            <button class="prompt-chip" data-query="Is it raining in London right now? Should I take an umbrella?">
+              <i class="fa-solid fa-umbrella text-amber"></i>
+              <span>Rain check for London & travel advice</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Tool Capabilities Card -->
+        <section class="sidebar-section capabilities-section" aria-labelledby="capabilities-heading">
+          <div class="section-header">
+            <h2 id="capabilities-heading" class="section-title">
+              <i class="fa-solid fa-microchip text-violet"></i> Agent Tools
+            </h2>
+          </div>
+          <div class="tools-status-list">
+            <div class="tool-status-item">
+              <div class="tool-icon-wrapper tool-weather">
+                <i class="fa-solid fa-cloud-sun"></i>
+              </div>
+              <div class="tool-meta">
+                <span class="tool-name">get_weather</span>
+                <span class="tool-desc">WeatherStack Live Telemetry</span>
+              </div>
+              <span class="tool-active-tag">Active</span>
+            </div>
+            <div class="tool-status-item">
+              <div class="tool-icon-wrapper tool-tavily">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+              <div class="tool-meta">
+                <span class="tool-name">tavily_search</span>
+                <span class="tool-desc">Real-time Web Grounding</span>
+              </div>
+              <span class="tool-active-tag">Active</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Right Main Chat Playground -->
+      <section class="chat-hub" aria-label="Conversation with Agent">
+        <!-- Chat History Stream -->
+        <div class="chat-stream" id="chat-stream">
+          <!-- Initial Welcome Hero Card -->
+          <div class="welcome-hero-card" id="welcome-hero">
+            <div class="welcome-glow-border"></div>
+            <div class="welcome-content">
+              <div class="welcome-badge">
+                <i class="fa-solid fa-sparkles"></i> Autonomous AI Agent Ready
+              </div>
+              <h2 class="welcome-headline">How can I assist your mission today?</h2>
+              <p class="welcome-description">
+                Aetheris combines the reasoning power of <strong>ReAct</strong> with live meteorological sensors from 
+                <strong>WeatherStack</strong> and real-time internet intelligence via <strong>Tavily</strong>.
+              </p>
+              <div class="welcome-feature-tags">
+                <span class="feature-tag"><i class="fa-solid fa-check text-cyan"></i> Live Weather & Forecasts</span>
+                <span class="feature-tag"><i class="fa-solid fa-check text-indigo"></i> Breaking News & Fact Checking</span>
+                <span class="feature-tag"><i class="fa-solid fa-check text-emerald"></i> Multi-Tool ReAct Reasoning</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Chat Messages Will Be Inserted Here -->
+          <div class="messages-container" id="messages-container"></div>
+        </div>
+
+        <!-- Floating Agent Composer Bar -->
+        <div class="composer-container">
+          <!-- Quick Suggestion Pill Bar -->
+          <div class="composer-suggestions" id="composer-suggestions">
+            <button class="suggestion-pill" data-query="Today's temperature in New Delhi">
+              🌤️ New Delhi Temperature
+            </button>
+            <button class="suggestion-pill" data-query="Latest geopolitical news on US and Middle East">
+              📰 US & Middle East News
+            </button>
+            <button class="suggestion-pill" data-query="Current weather in New York and humidity">
+              🗽 New York Weather
+            </button>
+          </div>
+
+          <!-- Input Box Form -->
+          <form id="chat-form" class="composer-form" onsubmit="event.preventDefault();">
+            <div class="composer-inner">
+              <label for="chat-input" class="sr-only">Type your message or question</label>
+              <textarea 
+                id="chat-input" 
+                rows="1" 
+                placeholder="Ask about live weather, current affairs, or combine multiple queries..." 
+                autocomplete="off"
+                spellcheck="true"
+              ></textarea>
+              
+              <div class="composer-controls">
+                <button type="submit" id="send-button" class="btn-send" title="Send message (Enter)" aria-label="Send message">
+                  <i class="fa-solid fa-arrow-up"></i>
+                </button>
+              </div>
+            </div>
+            <div class="composer-footer-hints">
+              <span><kbd>Enter</kbd> to send</span>
+              <span><kbd>Shift + Enter</kbd> for new line</span>
+              <span id="agent-thinking-pill" class="agent-thinking-pill hidden">
+                <span class="mini-spinner"></span> Agent is executing tools...
+              </span>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main Application Script -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
