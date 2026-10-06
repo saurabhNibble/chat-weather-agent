@@ -78,7 +78,7 @@ search_tool = TavilySearchResults(max_results=2)
 
 # 3. LLM (Groq Qwen 27B)
 groq_llm = ChatGroq(
-    model="qwen/qwen3.8-27b",
+    model="llama-3.1-8b-instant",
     temperature=0,
     api_key=groq_api_key
 )
